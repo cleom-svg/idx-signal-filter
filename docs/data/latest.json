@@ -1,0 +1,53 @@
+{
+  "run_date": "2026-10-02",
+  "status": "success",
+  "trigger": null,
+  "stages": {
+    "raw": 66,
+    "deduped": 64,
+    "surprising": 5,
+    "sent": 5
+  },
+  "items": [
+    {
+      "symbol": "GOTO",
+      "headline": "PT GoTo Gojek Tokopedia Tbk (GOTO) Explains Auto Rejection Bottom Hits as BEI Seeks Clarification",
+      "url": "https://investor.id/market/456356/bos-goto-bicara-yang-sebenarnya-soal-saham-perseroan",
+      "volume_z": 68.91,
+      "return_z": 1.91,
+      "reason": "volume +68.9s"
+    },
+    {
+      "symbol": "GOTO",
+      "headline": "PT GoTo Gojek Tokopedia Tbk (GOTO) Shares Form New Strength as Transaction Value Tops Rp1 Trillion",
+      "url": "https://www.bloombergtechnoz.com/detail-news/123423/saham-goto-bentuk-kekuatan-baru-transaksi-tembus-rp1-triliun",
+      "volume_z": 68.91,
+      "return_z": 1.91,
+      "reason": "volume +68.9s"
+    },
+    {
+      "symbol": "GOTO",
+      "headline": "Foreign Investors Dump PT Goto Gojek Tokopedia Tbk (GOTO) Shares in Heavy Net Sell",
+      "url": "https://investor.id/market/456411/saham-goto-dibuang-asing-habishabisan",
+      "volume_z": 68.91,
+      "return_z": 1.91,
+      "reason": "volume +68.9s"
+    },
+    {
+      "symbol": "GOTO",
+      "headline": "Undervalued GOTO Rebounds as Trading Heats Up After Rp50 Floor Lifted",
+      "url": "https://emitennews.com/news/valuasi-terdiskon-goto-rebound",
+      "volume_z": 68.91,
+      "return_z": 1.91,
+      "reason": "volume +68.9s"
+    },
+    {
+      "symbol": "GOTO",
+      "headline": "PT GoTo Gojek Tokopedia Tbk (GOTO) Shares Reverse Course with 7.14% Jump After Auto Rejection Streak",
+      "url": "https://investor.id/market/456430/yang-bikin-goto-mendadak-putar-arah",
+      "volume_z": 68.91,
+      "return_z": 1.91,
+      "reason": "volume +68.9s"
+    }
+  ]
+}

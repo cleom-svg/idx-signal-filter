@@ -1,0 +1,62 @@
+{
+  "_comment": "Commit this on DAY 1. It is the contract between backend and frontend. The frontend pair build against this file so they are never blocked waiting for the pipeline to go live. When real output arrives, it slots in unchanged.",
+  "run_date": "2026-09-14",
+  "status": "success",
+  "stages": {
+    "raw": 8420,
+    "deduped": 2910,
+    "surprising": 387,
+    "watchlist": 54,
+    "sent": 6
+  },
+  "items": [
+    {
+      "symbol": "GOTO",
+      "headline": "GoTo announces restructuring of on-demand services unit",
+      "url": "https://example.com/goto-restructuring",
+      "volume_z": 6.8,
+      "return_z": -3.4,
+      "reason": "volume +6.8s, price -3.4s"
+    },
+    {
+      "symbol": "ADRO",
+      "headline": "Adaro reports higher coal output on new Kalimantan capacity",
+      "url": "https://example.com/adro-output",
+      "volume_z": 4.1,
+      "return_z": 2.2,
+      "reason": "volume +4.1s, price +2.2s"
+    },
+    {
+      "symbol": "BBRI",
+      "headline": "Bank Rakyat Indonesia insider filing: director acquires 2.1m shares",
+      "url": "https://example.com/bbri-filing",
+      "volume_z": 3.3,
+      "return_z": 0.8,
+      "reason": "volume +3.3s"
+    },
+    {
+      "symbol": "MDKA",
+      "headline": "Merdeka Copper Gold halted pending announcement",
+      "url": "https://example.com/mdka-halt",
+      "volume_z": 2.9,
+      "return_z": -2.6,
+      "reason": "volume +2.9s, price -2.6s"
+    },
+    {
+      "symbol": "TLKM",
+      "headline": "Telkom Indonesia data centre joint venture confirmed",
+      "url": "https://example.com/tlkm-jv",
+      "volume_z": 2.7,
+      "return_z": 1.4,
+      "reason": "volume +2.7s"
+    },
+    {
+      "symbol": "BRPT",
+      "headline": "Barito Pacific unit secures geothermal expansion permit",
+      "url": "https://example.com/brpt-permit",
+      "volume_z": null,
+      "return_z": 2.5,
+      "reason": "price +2.5s"
+    }
+  ]
+}

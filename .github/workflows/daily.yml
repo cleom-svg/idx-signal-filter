@@ -1,0 +1,79 @@
+# The graded deliverable. This file IS the "autonomous repeatable routine".
+#
+# The Actions run-history page — a column of green checkmarks, one per trading
+# day — is your primary evidence. Screenshot it for the submission.
+name: daily-pipeline
+
+on:
+  schedule:
+    # 12:00 UTC = 19:00 WIB, weekdays. IDX closes 16:00 WIB, so data has settled.
+    # GitHub's free-tier cron can drift 10-30 minutes. Irrelevant for a daily job.
+    - cron: "0 12 * * 1-5"
+  workflow_dispatch:
+    # KEEP THIS. Lets you trigger a live run during the presentation, which is a
+    # far better demo than a screenshot.
+    inputs:
+      date:
+        description: "Override date (YYYY-MM-DD), blank = last trading day"
+        required: false
+
+# NOTE: this workflow deliberately does NOT commit anything back to the repo.
+# The hackathon rules freeze the repo at submission (or 30 Sep 23:59 WIB,
+# whichever is first) — "no commits, pushes, edits, or changes of any kind
+# ... including bug fixes" after that. A scheduled job that commits would
+# violate the freeze on every run after submission. Dashboard data is instead
+# published via a Pages *artifact* deploy, which is not a repo write.
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: daily-pipeline
+  cancel-in-progress: false   # never kill a half-finished run
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment:
+      name: github-pages
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run tests
+        run: python -m pytest tests/ -q
+
+      - name: Run pipeline
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          SECTORS_API_KEY: ${{ secrets.SECTORS_API_KEY }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          GITHUB_EVENT_NAME: ${{ github.event_name }}
+        run: |
+          if [ -n "${{ inputs.date }}" ]; then
+            python src/main.py --date "${{ inputs.date }}"
+          else
+            python src/main.py
+          fi
+
+      - name: Upload dashboard artifact
+        # Publishes docs/ as a Pages artifact — no repo write, so nothing
+        # here can violate the post-submission freeze.
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
