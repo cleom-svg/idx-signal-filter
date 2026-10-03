@@ -97,7 +97,7 @@ than enough for near-identical headlines about the same announcement.
 
 | Track | Owner | Files |
 |---|---|---|
-| Ingestion + DB | Bernardi | `ingest.py`, `backfill.py`, `db.py`, `schema.sql` |
+| Ingestion + DB | Cleon & Bernardi | `ingest.py`, `backfill.py`, `db.py`, `schema.sql` |
 | Filters + CI | Cleon | `baselines.py`, `filters.py`, `daily.yml` |
 | Delivery | Shifra | `digest.py`, Telegram bot |
 | Observability | Eddyson | `docs/` dashboard |
