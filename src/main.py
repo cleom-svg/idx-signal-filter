@@ -29,8 +29,7 @@ logging.basicConfig(
 )
 log = logging.getLogger("main")
 
-# IDX trading holidays. Update annually — or replace with the Sectors
-# suspensions/calendar endpoint if you want this to be self-maintaining.
+
 IDX_HOLIDAYS_2026 = {
     "2026-01-01", "2026-03-19", "2026-03-20", "2026-03-23",
     "2026-05-01", "2026-05-14", "2026-06-01", "2026-08-17",
