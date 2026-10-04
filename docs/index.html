@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>IDX Signal Filter — pipeline status</title>
+<title>IDX Signal Filter &mdash; pipeline status</title>
 <style>
   :root {
     --paper: #f3f5f7;
@@ -98,3 +98,200 @@
 
   /* --- attenuation: the filter itself, which is the whole product --- */
   .stage { display: grid; grid-template-columns: 8.5rem 1fr 4.5rem; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem; }
+  .stage-name { font-size: 0.85rem; color: var(--mid); }
+  .track { height: 26px; background: var(--card); border: 1px solid var(--line); border-radius: 3px; overflow: hidden; }
+  .bar { height: 100%; background: var(--noise); }
+  .stage:last-of-type .bar { background: var(--signal); }
+  .count { text-align: right; font-size: 0.9rem; font-weight: 500; }
+
+  .scale-note { font-size: 0.75rem; color: var(--mid); margin-top: 0.85rem; }
+
+  .headline-figure { font-size: 2.6rem; font-weight: 300; letter-spacing: -0.03em; line-height: 1; }
+  .headline-figure span { font-size: 1rem; font-weight: 400; color: var(--mid); margin-left: 0.4rem; letter-spacing: 0; }
+
+  /* --- digest --- */
+  ol { list-style: none; margin: 0; padding: 0; }
+  li { padding: 0.85rem 0; border-bottom: 1px solid var(--line); display: grid; grid-template-columns: 4.5rem 1fr; gap: 0.9rem; }
+  .sym { font-weight: 600; font-size: 0.9rem; }
+  .reason { font-size: 0.78rem; color: var(--signal); margin-top: 0.15rem; }
+  li a { color: var(--ink); text-decoration: none; border-bottom: 1px solid var(--line); }
+  li a:hover, li a:focus-visible { border-bottom-color: var(--ink); }
+
+  /* --- run history --- */
+  .runs { display: flex; gap: 4px; flex-wrap: wrap; }
+  .run { width: 30px; height: 30px; border-radius: 3px; background: var(--signal); position: relative; }
+  .run[data-state="failed"] { background: var(--alert); }
+  .run[data-state="no_trading_day"] { background: var(--line); }
+  .run:not([data-trigger="schedule"]) { opacity: 0.45; }
+
+  .empty { color: var(--mid); font-size: 0.9rem; }
+
+  .header-right { display: flex; flex-direction: column; align-items: flex-end; gap: 0.6rem; }
+  .theme-toggle {
+    font: inherit;
+    font-size: 0.78rem;
+    color: var(--mid);
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    padding: 0.2rem 0.6rem;
+    cursor: pointer;
+  }
+  .theme-toggle:hover { color: var(--ink); border-color: var(--mid); }
+
+  footer { margin-top: 2.5rem; padding-top: 1rem; border-top: 1px solid var(--line); }
+
+  :focus-visible { outline: 2px solid var(--signal); outline-offset: 2px; }
+  @media (prefers-reduced-motion: no-preference) {
+    .bar { transition: width 420ms cubic-bezier(.22,.61,.36,1); }
+  }
+  @media (max-width: 34rem) {
+    .stage { grid-template-columns: 6.5rem 1fr 3.5rem; }
+    header { flex-direction: column; }
+    .header-right { align-items: flex-start; }
+  }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <div>
+      <h1>IDX Signal Filter</h1>
+      <p class="sub" id="run-date">Loading&hellip;</p>
+    </div>
+    <div class="header-right">
+      <div class="status" id="status" data-state="success">
+        <span class="dot"></span><span id="status-text">&mdash;</span>
+      </div>
+      <button type="button" class="theme-toggle" id="theme-toggle" aria-label="Switch colour theme">&#9790; Dark mode</button>
+    </div>
+  </header>
+
+  <section>
+    <h2>What got through today</h2>
+    <p class="headline-figure" id="compression">&mdash;<span>filtered out</span></p>
+    <div id="stages" style="margin-top:1.5rem"></div>
+    <p class="scale-note">Bar width is log-scaled so the later stages stay visible. Counts are exact.</p>
+  </section>
+
+  <section>
+    <h2>Digest</h2>
+    <ol id="items"></ol>
+  </section>
+
+  <section>
+    <h2>Recent runs</h2>
+    <div class="runs" id="runs"></div>
+    <p class="scale-note">One square per run, oldest to newest. Faded squares were started by hand or locally; solid ones ran on schedule. Grey means the market was closed.</p>
+  </section>
+
+  <footer class="scale-note">
+    Information only, not investment advice.
+  </footer>
+</main>
+
+<script>
+// Escape text from the data before putting it into HTML.
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+
+// Theme toggle: light <-> dark. Starts from the viewer's saved choice, else
+// their system setting. Storage can be unavailable, so every access is guarded.
+const themeButton = document.getElementById("theme-toggle");
+function applyTheme(theme) {
+  document.documentElement.dataset.theme = theme;
+  const next = theme === "dark" ? "light" : "dark";
+  themeButton.textContent = theme === "dark" ? "\u2600 Light mode" : "\u263E Dark mode";
+  themeButton.setAttribute("aria-label", `Switch to ${next} mode`);
+}
+let currentTheme = null;
+try { currentTheme = localStorage.getItem("theme"); } catch {}
+if (currentTheme !== "light" && currentTheme !== "dark") {
+  currentTheme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+}
+applyTheme(currentTheme);
+themeButton.addEventListener("click", () => {
+  currentTheme = currentTheme === "dark" ? "light" : "dark";
+  applyTheme(currentTheme);
+  try { localStorage.setItem("theme", currentTheme); } catch {}
+});
+
+const STAGE_LABELS = {
+  raw: "Raw intake",
+  deduped: "Deduplicated",
+  surprising: "Above threshold",
+  watchlist: "On watchlist",
+  sent: "Sent"
+};
+
+function renderStages(stages) {
+  const entries = Object.entries(STAGE_LABELS).filter(([k]) => stages[k] != null);
+  const max = Math.max(...entries.map(([k]) => stages[k]), 1);
+  document.getElementById("stages").innerHTML = entries.map(([key, label]) => {
+    const n = stages[key];
+    const pct = Math.max(Math.log(n + 1) / Math.log(max + 1) * 100, 2);
+    return `<div class="stage">
+      <div class="stage-name">${label}</div>
+      <div class="track"><div class="bar" style="width:${pct.toFixed(1)}%"></div></div>
+      <div class="count">${Number(n).toLocaleString()}</div>
+    </div>`;
+  }).join("");
+}
+
+function renderItems(items) {
+  const list = document.getElementById("items");
+  if (!items.length) {
+    list.innerHTML = `<li class="empty" style="grid-template-columns:1fr">Nothing crossed threshold today.</li>`;
+    return;
+  }
+  list.innerHTML = items.map(it => `<li>
+    <div><span class="sym">${esc(it.symbol) || "&mdash;"}</span></div>
+    <div>
+      ${/^https?:\/\//.test(it.url ?? "") ? `<a href="${esc(it.url)}" target="_blank" rel="noopener">${esc(it.headline)}</a>` : esc(it.headline)}
+      <div class="reason">${esc(it.reason)}</div>
+    </div>
+  </li>`).join("");
+}
+
+function renderRuns(runs) {
+  document.getElementById("runs").innerHTML = runs.slice(0, 30).reverse().map(r =>
+    `<div class="run" data-state="${esc(r.status)}" data-trigger="${esc(r.trigger)}" title="${esc(r.run_date)} &middot; ${esc(r.trigger)} &mdash; ${esc(r.status)}, ${esc(r.count_sent ?? 0)} sent"></div>`
+  ).join("");
+}
+
+async function load() {
+  try {
+    const res = await fetch("data/latest.json");
+    if (!res.ok) throw new Error(res.status);
+    const data = await res.json();
+    document.getElementById("run-date").textContent = data.run_date ?? "";
+
+    const status = document.getElementById("status");
+    status.dataset.state = data.status;
+    document.getElementById("status-text").textContent =
+      { success: "Ran today", failed: "Run failed", no_trading_day: "Market closed" }[data.status] ?? data.status;
+
+    const s = data.stages ?? {};
+    if (s.raw) {
+      document.getElementById("compression").innerHTML =
+        `${((1 - (s.sent ?? 0) / s.raw) * 100).toFixed(1)}%<span>filtered out</span>`;
+    }
+    renderStages(s);
+    renderItems(data.items ?? []);
+
+    // Run history is optional - the dashboard degrades rather than breaking.
+    try {
+      const runs = await (await fetch("data/runs.json")).json();
+      renderRuns(runs.runs ?? []);
+    } catch {
+      document.getElementById("runs").innerHTML =
+        `<p class="empty">No run history yet.</p>`;
+    }
+  } catch (err) {
+    document.getElementById("run-date").textContent =
+      "Could not load data/latest.json \u2014 has the pipeline run yet?";
+  }
+}
+load();
+</script>
+</body>
+</html>
