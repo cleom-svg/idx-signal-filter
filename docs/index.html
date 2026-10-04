@@ -135,9 +135,13 @@
     <div class="runs" id="runs"></div>
     <p class="scale-note">One square per scheduled run. Grey means the market was closed.</p>
   </section>
+    <footer class="scale-note" style="margin-top:2.5rem">
+    Information only, not investment advice.
+  </footer>
 </main>
 
 <script>
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const STAGE_LABELS = {
   raw: "Raw intake",
   deduped: "Deduplicated",
@@ -166,18 +170,18 @@ function renderItems(items) {
     list.innerHTML = `<li class="empty" style="grid-template-columns:1fr">Nothing crossed threshold today.</li>`;
     return;
   }
-  list.innerHTML = items.map(it => `<li>
-    <div><span class="sym">${it.symbol ?? "—"}</span></div>
+    list.innerHTML = items.map(it => `<li>
+    <div><span class="sym">${esc(it.symbol) || "—"}</span></div>
     <div>
-      ${it.url ? `<a href="${it.url}">${it.headline ?? ""}</a>` : (it.headline ?? "")}
-      <div class="reason">${it.reason ?? ""}</div>
+      ${/^https?:\/\//.test(it.url ?? "") ? `<a href="${esc(it.url)}" target="_blank" rel="noopener">${esc(it.headline)}</a>` : esc(it.headline)}
+      <div class="reason">${esc(it.reason)}</div>
     </div>
   </li>`).join("");
 }
 
 function renderRuns(runs) {
   document.getElementById("runs").innerHTML = runs.slice(0, 30).reverse().map(r =>
-    `<div class="run" data-state="${r.status}" title="${r.run_date} — ${r.status}, ${r.count_sent ?? 0} sent"></div>`
+    `<div class="run" data-state="${esc(r.status)}" title="${esc(r.run_date)} — ${esc(r.status)}, ${r.count_sent ?? 0} sent"></div>`
   ).join("");
 }
 

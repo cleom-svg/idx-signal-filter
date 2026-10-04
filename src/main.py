@@ -60,12 +60,12 @@ def last_trading_day(reference=None):
 
 
 def current_trigger():
-    """schedule | workflow_dispatch | None (not running in GitHub Actions).
+    """schedule | workflow_dispatch | local (not running in GitHub Actions).
 
     This is the rubric evidence: the judging video needs runs that fired
     unattended (schedule), distinguishable from manual ones.
     """
-    return os.environ.get("GITHUB_EVENT_NAME") or None
+    return os.environ.get("GITHUB_EVENT_NAME") or "local"
 
 
 def log_run(run_date, status, stages=None, started=None, error=None):
@@ -73,7 +73,7 @@ def log_run(run_date, status, stages=None, started=None, error=None):
     upsert_many(
         "run_log",
         ["run_date", "started_at", "finished_at", "status", "trigger", "error",
-         "count_raw", "count_deduped", "count_surprising", "count_sent"],
+         "count_raw", "count_deduped", "count_surprising", "count_watchlist", "count_sent"],
         [{
             "run_date": run_date,
             "started_at": started,
@@ -84,9 +84,10 @@ def log_run(run_date, status, stages=None, started=None, error=None):
             "count_raw": stages.get("raw", 0),
             "count_deduped": stages.get("deduped", 0),
             "count_surprising": stages.get("surprising", 0),
+            "count_watchlist": stages.get("watchlist", 0),
             "count_sent": stages.get("sent", 0),
         }],
-        conflict_cols=["run_date"],
+        conflict_cols=["run_date", "trigger"],
     )
 
 
@@ -129,6 +130,7 @@ def run_pipeline(run_date):
 
     watchlist = [r["symbol"] for r in query("SELECT symbol FROM watchlist")]
     relevant = filter_watchlist(surprising, watchlist) if watchlist else surprising
+    stages["watchlist"] = len(relevant)
 
     final = rank(relevant, MAX_DIGEST_ITEMS)
     stages["sent"] = len(final)

@@ -73,16 +73,20 @@ CREATE TABLE IF NOT EXISTS sent_digests (
 -- `trigger` is the rubric evidence: the judging video needs to show runs
 -- that fired unattended (schedule), not just manual ones (workflow_dispatch).
 CREATE TABLE IF NOT EXISTS run_log (
-    run_date         DATE PRIMARY KEY,
+    run_date         DATE NOT NULL,
+    trigger          TEXT NOT NULL DEFAULT 'local',  -- schedule | workflow_dispatch | local
     started_at       TIMESTAMPTZ,
     finished_at      TIMESTAMPTZ,
     status           TEXT,   -- success | failed | no_trading_day
-    trigger          TEXT,   -- schedule | workflow_dispatch
     error            TEXT,
     count_raw        INT DEFAULT 0,
     count_deduped    INT DEFAULT 0,
     count_surprising INT DEFAULT 0,
-    count_sent       INT DEFAULT 0
+    count_watchlist  INT DEFAULT 0,
+    count_sent       INT DEFAULT 0,
+    -- One row per (day, trigger): a manual re-run must never overwrite the
+    -- scheduled run's row, because the scheduled rows ARE the autonomy evidence.
+    PRIMARY KEY (run_date, trigger)
 );
 
 CREATE TABLE IF NOT EXISTS watchlist (
