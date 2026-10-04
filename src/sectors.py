@@ -33,7 +33,8 @@ from config import (
     SECTORS_BASE_URL,
 )
 
-log = logging.getLogger(__name__)
+log = logging.getLogger(__name__) 
+RATE_LIMIT_WAIT = 40  
 
 
 class SectorsError(RuntimeError):
@@ -71,7 +72,12 @@ class SectorsClient:
             if resp.status_code in (429, 500, 502, 503, 504):
                 if attempt == HTTP_RETRIES:
                     raise SectorsError(f"{resp.status_code} on {path} after retries")
-                wait = float(resp.headers.get("Retry-After", delay))
+                retry_after = float(resp.headers.get("Retry-After") or 0)
+                if resp.status_code == 429:
+                    # Sectors' limit resets per minute; short waits just burn the retries.
+                    wait = max(retry_after, RATE_LIMIT_WAIT * attempt)
+                else:
+                    wait = retry_after or delay
                 log.warning("%s on %s, waiting %.1fs", resp.status_code, path, wait)
                 time.sleep(wait)
                 delay *= 2
