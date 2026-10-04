@@ -292,10 +292,10 @@ them on a call on day 1, because every other track is blocked until they exist.
 
 | Track | Owner | Deliverable |
 |---|---|---|
-| Ingestion + DB | A (Cleon) | `ingest.py`, `backfill.py`, `db.py`, schema |
-| Filters + CI | B | `baselines.py`, `filters.py`, `daily.yml` |
-| Delivery | C | Telegram bot, digest formatting |
-| Observability | D | GitHub Pages dashboard |
+| Ingestion + DB | Cleon & Bernardi | `ingest.py`, `backfill.py`, `db.py`, schema |
+| Filters + CI | Cleon | `baselines.py`, `filters.py`, `daily.yml` |
+| Delivery | Shifra | Telegram bot, digest formatting |
+| Observability | Eddyson | GitHub Pages dashboard |
 
 **The frontend pair visualise the *system*, not the market.** A BBCA price chart is
 decoration. Run history, per-stage filter counts, and a digest archive are direct evidence

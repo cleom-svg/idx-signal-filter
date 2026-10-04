@@ -97,29 +97,17 @@ than enough for near-identical headlines about the same announcement.
 
 | Track | Owner | Files |
 |---|---|---|
-| Ingestion + DB | A | `ingest.py`, `backfill.py`, `db.py`, `schema.sql` |
-| Filters + CI | B | `baselines.py`, `filters.py`, `daily.yml` |
-| Delivery | C | `digest.py`, Telegram bot |
-| Observability | D | `docs/` dashboard |
+| Ingestion + DB | Cleon & Bernardi | `ingest.py`, `backfill.py`, `db.py`, `schema.sql` |
+| Filters + CI | Cleon | `baselines.py`, `filters.py`, `daily.yml` |
+| Delivery | Shifra | `digest.py`, Telegram bot |
+| Observability | Eddyson | `docs/` dashboard |
 
-**Assign files, not features.** Merge conflicts across four people on a two-week
-deadline cost more than anyone expects.
+
 
 The frontend pair visualise **the system, not the market** — run history and
 per-stage filter counts are direct evidence of the thing the rubric grades. A price
 chart is decoration.
 
----
-
-## The deadline that matters is day 5, not day 18
-
-Run history cannot be compressed later. Twelve green checkmarks across real trading
-days is the primary evidence of autonomy. **Deploy something trivial early and
-improve it in place.**
-
-The version of this that goes wrong is spending days 1–8 perfecting the filter logic
-because it is the interesting part, then deploying on day 12 with a beautiful
-algorithm and four green checkmarks.
 
 ---
 
