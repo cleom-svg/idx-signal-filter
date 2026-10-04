@@ -114,6 +114,11 @@
   li { padding: 0.85rem 0; border-bottom: 1px solid var(--line); display: grid; grid-template-columns: 4.5rem 1fr; gap: 0.9rem; }
   .sym { font-weight: 600; font-size: 0.9rem; }
   .reason { font-size: 0.78rem; color: var(--signal); margin-top: 0.15rem; }
+  .scores { font-size: 0.78rem; color: var(--mid); margin-top: 0.1rem; }
+  .scores .hit { color: var(--signal); font-weight: 600; }
+  .count-note { display: block; font-size: 0.72rem; font-weight: 400; color: var(--mid); margin-top: 0.1rem; }
+  .headlines { list-style: none; margin: 0 0 0.35rem; padding: 0; }
+  .headlines li { display: block; padding: 0.15rem 0; border: 0; }
   li a { color: var(--ink); text-decoration: none; border-bottom: 1px solid var(--line); }
   li a:hover, li a:focus-visible { border-bottom-color: var(--ink); }
 
@@ -237,19 +242,66 @@ function renderStages(stages) {
   }).join("");
 }
 
+// One signed score, e.g. +68.9 sigma. Returns "" when the value is missing.
+function fmtZ(z) {
+  const n = Number(z);
+  if (z == null || !Number.isFinite(n)) return "";
+  return `${n >= 0 ? "+" : ""}${n.toFixed(1)}\u03C3`;
+}
+
+// "vol +68.9 sigma . price +1.9 sigma", highlighting whichever score the
+// pipeline's reason says made the item pass.
+function scoresLine(it) {
+  const reason = String(it.reason ?? "").toLowerCase();
+  const parts = [];
+  const vol = fmtZ(it.volume_z);
+  const ret = fmtZ(it.return_z);
+  if (vol) parts.push(`<span class="${reason.includes("volume") ? "hit" : ""}">vol ${vol}</span>`);
+  if (ret) parts.push(`<span class="${/return|price/.test(reason) ? "hit" : ""}">price ${ret}</span>`);
+  return parts.length
+    ? `<div class="scores">${parts.join(" &middot; ")}</div>`
+    : `<div class="reason">${esc(it.reason)}</div>`;
+}
+
+function headlineHtml(it) {
+  return /^https?:\/\//.test(it.url ?? "")
+    ? `<a href="${esc(it.url)}" target="_blank" rel="noopener">${esc(it.headline)}</a>`
+    : esc(it.headline);
+}
+
 function renderItems(items) {
   const list = document.getElementById("items");
   if (!items.length) {
     list.innerHTML = `<li class="empty" style="grid-template-columns:1fr">Nothing crossed threshold today.</li>`;
     return;
   }
-  list.innerHTML = items.map(it => `<li>
-    <div><span class="sym">${esc(it.symbol) || "&mdash;"}</span></div>
+  // Group by stock, keeping the pipeline's ranking order of first appearance.
+  const groups = new Map();
+  for (const it of items) {
+    const key = it.symbol ?? "";
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key).push(it);
+  }
+  list.innerHTML = [...groups.entries()].map(([symbol, its]) => `<li>
     <div>
-      ${/^https?:\/\//.test(it.url ?? "") ? `<a href="${esc(it.url)}" target="_blank" rel="noopener">${esc(it.headline)}</a>` : esc(it.headline)}
-      <div class="reason">${esc(it.reason)}</div>
+      <span class="sym">${esc(symbol) || "&mdash;"}</span>
+      ${its.length > 1 ? `<span class="count-note">${its.length} headlines</span>` : ""}
+    </div>
+    <div>
+      <ul class="headlines">${its.map(it => `<li>${headlineHtml(it)}</li>`).join("")}</ul>
+      ${scoresLine(its[0])}
     </div>
   </li>`).join("");
+}
+
+// Show a timestamp in Jakarta time, e.g. "4 Oct 2026, 20:22 WIB".
+function fmtWib(value) {
+  const d = new Date(value);
+  if (Number.isNaN(d.getTime())) return "";
+  return new Intl.DateTimeFormat("en-GB", {
+    timeZone: "Asia/Jakarta", day: "numeric", month: "short", year: "numeric",
+    hour: "2-digit", minute: "2-digit", hour12: false
+  }).format(d) + " WIB";
 }
 
 function renderRuns(runs) {
@@ -263,7 +315,10 @@ async function load() {
     const res = await fetch("data/latest.json");
     if (!res.ok) throw new Error(res.status);
     const data = await res.json();
-    document.getElementById("run-date").textContent = data.run_date ?? "";
+    // Prefer the pipeline's own timestamp; otherwise use when the file was published.
+    const updated = fmtWib(data.generated_at ?? res.headers.get("Last-Modified"));
+    document.getElementById("run-date").textContent =
+      [data.run_date, updated && `updated ${updated}`].filter(Boolean).join(" \u00B7 ");
 
     const status = document.getElementById("status");
     status.dataset.state = data.status;
