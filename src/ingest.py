@@ -112,6 +112,10 @@ def ingest_news(client, start, end):
             }
         )
 
+    # The API can return the same article twice (e.g. across pages); keep one
+    # row per id, or Postgres rejects the batch ("cannot affect row a second time").
+    rows = list({row["id"]: row for row in rows}.values())
+
     n = upsert_many(
         "news_items",
         ["id", "symbol", "published_at", "title", "body", "source", "url"],
