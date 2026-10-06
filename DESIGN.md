@@ -51,9 +51,9 @@ autonomy. Deploy something trivial early and improve it in place.
 flowchart TD
     A[Sectors API<br/>prices, volume, news, filings] --> B[ingest.py<br/>fetch + normalise]
     S[GitHub Actions cron<br/>12:00 UTC / 19:00 WIB] -.triggers.-> B
-    B --> C[(PostgreSQL<br/>raw tables)]
+    B --> C[(Supabase<br/>raw tables)]
     C --> D[baselines.py<br/>30-day rolling mean/std]
-    D --> E[(PostgreSQL<br/>derived tables)]
+    D --> E[(Supabase<br/>derived tables)]
     C --> F[filters.py<br/>dedup, surprise, watchlist]
     E --> F
     F --> G[digest.py<br/>format + send]
