@@ -8,7 +8,8 @@ on:
   schedule:
     # 12:00 UTC = 19:00 WIB, weekdays. IDX closes 16:00 WIB, so data has settled.
     # GitHub's free-tier cron can drift 10-30 minutes. Irrelevant for a daily job.
-    - cron: "0 12 * * 1-5"
+    - cron: "0 12 * * 1-5"   # 19:00 WIB, main run
+    - cron: "0 14 * * 1-5"   # 21:00 WIB, backup in case GitHub drops the first one
   workflow_dispatch:
     # KEEP THIS. Lets you trigger a live run during the presentation, which is a
     # far better demo than a screenshot.
