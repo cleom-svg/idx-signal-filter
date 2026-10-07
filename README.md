@@ -1,12 +1,20 @@
 # IDX Signal Filter
 
+> For Indonesian retail investors who can't read 80+ stock news items a day: a daily
+> Telegram digest of only the IDX news backed by unusual price or volume moves.
+
 **Live dashboard:** https://cleom-svg.github.io/idx-signal-filter/
 **Telegram digest:** https://t.me/idx_signal_digest
-**Data source:** Sectors REST API (daily OHLCV + IDX news)
-**Signal over noise: an automated daily filtering pipeline for IDX market information**
+**Judging video:** <link> · **Teaser:** <link>
+**Data source:** Sectors REST API — daily OHLCV + volume per stock, and IDX news.
+Without Sectors data there is nothing to baseline, score or send.
 
-A scheduled autonomous pipeline that ingests IDX market data, reduces it to items
-that meaningfully deviate from baseline, and delivers a daily digest via Telegram.
+A scheduled pipeline (GitHub Actions, weekdays 19:17 WIB) that ingests IDX market
+data, keeps only items that meaningfully deviate from each stock's own 30-day
+baseline, and delivers a daily digest via Telegram.
+
+> **Information only, not investment advice.** The project screens and alerts;
+> it never places or automates trades.
 
 See [`DESIGN.md`](DESIGN.md) for the full blueprint.
 
@@ -20,7 +28,8 @@ filters that down to a handful of items per day.
 
 ```
 raw intake  ->  deduplicate  ->  statistical surprise  ->  watchlist  ->  digest
-  ~10,000         ~3,000              ~400                   ~60          ~8
+    84              82                   7                    7            7
+                                        (2026-10-02 · 91.7% filtered)
 ```
 
 Stages run in **ascending order of computational cost** — cheap deterministic filters
@@ -128,3 +137,8 @@ Moved 3σ → it mattered. Moved 0.2σ → it did not.
 
 **Optimise miss rate, not precision.** A filter sending 5 useful items a day is
 worthless if it silently drops the announcement that moved a position 12%.
+
+**Status:** compression ratio is computed on every run (see the dashboard).
+Miss rate is the next evaluation step: every news item and daily price is stored
+raw *before* filtering, so it can be computed retroactively without re-fetching
+from the API. Open rate needs Telegram analytics and is not measured yet.
