@@ -44,19 +44,28 @@ def is_trading_day(d):
 
 
 def last_trading_day(reference=None):
-    """Most recent trading day at or before `reference` (default: today).
+    """Most recent trading day whose session has closed (default: now, WIB).
 
     A scheduled 19:00 WIB run should digest TODAY's session, which has
-    already closed (IDX closes 16:00 WIB) — not yesterday's. This only
-    steps backward when `reference` itself isn't a trading day (weekend,
-    holiday), so a Monday run still correctly falls back to Friday.
+    already closed (IDX closes 16:00 WIB) — not yesterday's. But a run before
+    17:00 WIB (a manual daytime run, or a scheduled run GitHub delayed past
+    midnight) must not pick today: the session isn't over, and the Sectors API
+    rejects dates it considers in the future. Those runs use the previous day.
+    Weekends and holidays still step back, so a Monday run falls back to Friday.
     """
-    d = reference or datetime.now(ZoneInfo(MARKET_TZ)).date()
+    if reference is None:
+        now = datetime.now(ZoneInfo(MARKET_TZ))
+        d = now.date()
+        if now.hour < 17:
+            d -= timedelta(days=1)
+    else:
+        d = reference
     for _ in range(10):
         if is_trading_day(d):
             return d
         d -= timedelta(days=1)
     raise RuntimeError("no trading day found in the last 10 days")
+    
 
 
 def current_trigger():
