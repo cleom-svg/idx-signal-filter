@@ -6,10 +6,13 @@ name: daily-pipeline
 
 on:
   schedule:
-    # 12:00 UTC = 19:00 WIB, weekdays. IDX closes 16:00 WIB, so data has settled.
-    # GitHub's free-tier cron can drift 10-30 minutes. Irrelevant for a daily job.
-    - cron: "0 12 * * 1-5"   # 19:00 WIB, main run
-    - cron: "0 14 * * 1-5"   # 21:00 WIB, backup in case GitHub drops the first one
+    # 12:17 UTC = 19:17 WIB, weekdays. IDX closes 16:00 WIB, so data has settled.
+    # Minute 17, not 0: GitHub delays or drops top-of-the-hour schedules most
+    # often, because that's when everyone else's jobs run.
+    - cron: "17 12 * * 1-5"
+    # Backup at 21:17 WIB in case GitHub drops the first one. Safe to run twice:
+    # the digest is sent once per day and run_log keeps one row per trigger.
+    - cron: "17 14 * * 1-5"
   workflow_dispatch:
     # KEEP THIS. Lets you trigger a live run during the presentation, which is a
     # far better demo than a screenshot.
