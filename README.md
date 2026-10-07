@@ -1,5 +1,8 @@
 # IDX Signal Filter
 
+**Live dashboard:** https://cleom-svg.github.io/idx-signal-filter/
+**Telegram digest:** https://t.me/idx_signal_digest
+**Data source:** Sectors REST API (daily OHLCV + IDX news)
 **Signal over noise: an automated daily filtering pipeline for IDX market information**
 
 A scheduled autonomous pipeline that ingests IDX market data, reduces it to items
