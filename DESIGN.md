@@ -22,11 +22,13 @@ items, and pushes them to Telegram.
 |---|---|
 | Price prediction | Not the problem. Out of scope. |
 | A trading dashboard | Zero rubric points. |
+| Trade execution of any kind | Prohibited, and not the problem. We screen and alert only. |
 | A live backend API | Second system, own failure modes, no rubric value. |
 | LLM scoring (v1) | Add only if time remains after day 15. |
 
 **Claim discipline.** We claim *measurable reduction*, not a solution. In the presentation:
-"98% compression at a 4% miss rate" — never "solves information overload."
+"~92% compression on real trading days" (measured on every run) — never "solves
+information overload." Miss rate is the next evaluation step (section 7).
 
 ---
 
@@ -49,8 +51,8 @@ autonomy. Deploy something trivial early and improve it in place.
 
 ```mermaid
 flowchart TD
-    A[Sectors API<br/>prices, volume, news, filings] --> B[ingest.py<br/>fetch + normalise]
-    S[GitHub Actions cron<br/>12:00 UTC / 19:00 WIB] -.triggers.-> B
+    A[Sectors API<br/>prices, volume, news] --> B[ingest.py<br/>fetch + normalise]
+    S[GitHub Actions cron<br/>12:17 UTC / 19:17 WIB<br/>backup 21:17 WIB] -.triggers.-> B
     B --> C[(Supabase<br/>raw tables)]
     C --> D[baselines.py<br/>30-day rolling mean/std]
     D --> E[(Supabase<br/>derived tables)]
@@ -58,13 +60,16 @@ flowchart TD
     E --> F
     F --> G[digest.py<br/>format + send]
     G --> H[Telegram bot]
-    G --> I[docs/data/latest.json<br/>committed back to repo]
+    G --> I[docs/data/latest.json<br/>deployed as Pages artifact]
     I --> J[GitHub Pages<br/>static dashboard]
 ```
 
 **Key principle: raw data is stored before analysis.** If filter logic changes, we re-run
 on stored history instead of re-fetching. The Sectors API is on a paid quota with 90-day
 window limits — re-fetching is expensive and slow.
+
+The pipeline never writes to the repository: the dashboard is published as a GitHub
+Pages *artifact*, so scheduled runs keep working after the submission freeze.
 
 ---
 
@@ -80,6 +85,10 @@ flowchart TD
     C --> D["Watchlist relevance — ~60"]
     D --> E["Daily digest — ~8 items"]
 ```
+
+*Design estimates above. Measured on 2026-10-02: **84 → 82 → 7 → 7 → 7** (91.7%
+filtered). Real volume is lower than estimated because intake is scoped to a 40-stock
+watchlist.*
 
 ### Stage 1 — Deduplication
 
@@ -115,11 +124,16 @@ remains.
 ### Stage 4 — LLM scoring (OPTIONAL, v2 only)
 
 Only build if days 16–17 arrive early. The writeup is *stronger* saying
-"cheap statistical filters achieved 98% compression, so no model was needed."
+"cheap statistical filters achieved ~92% compression, so no model was needed."
 
 ---
 
 ## 5. Data model
+
+**`sql/schema.sql` is the source of truth;** the block below is the original day-1
+sketch. Since then `run_log` became one row per `(run_date, trigger)` — with `trigger`,
+`error` and `count_watchlist` columns — so a manual re-run never overwrites the
+scheduled run that proves autonomy. `baselines` also stores `daily_return`.
 
 ```sql
 -- Raw: one row per symbol per trading day
@@ -133,7 +147,7 @@ CREATE TABLE daily_close (
     PRIMARY KEY (symbol, trade_date)
 );
 
--- Raw: news and filings
+-- Raw: news
 CREATE TABLE news_items (
     id           TEXT PRIMARY KEY,       -- source id or content hash
     symbol       TEXT,
@@ -157,6 +171,7 @@ CREATE TABLE baselines (
 );
 
 -- Derived: every score we computed, kept for re-tuning without re-fetching
+-- (table reserved in the schema; populating it is part of the evaluation step)
 CREATE TABLE item_scores (
     item_id      TEXT NOT NULL,
     run_date     DATE NOT NULL,
@@ -175,6 +190,7 @@ CREATE TABLE sent_digests (
 );
 
 -- Observability: per-run stage counts (feeds the dashboard)
+-- Current schema: PRIMARY KEY (run_date, trigger) — see note above.
 CREATE TABLE run_log (
     run_date         DATE PRIMARY KEY,
     started_at       TIMESTAMPTZ,
@@ -206,15 +222,19 @@ CREATE TABLE run_log (
 name: daily-pipeline
 on:
   schedule:
-    - cron: '0 12 * * 1-5'    # 19:00 WIB, weekdays
+    - cron: '17 12 * * 1-5'   # 19:17 WIB, weekdays (off the full hour: fewer GitHub delays)
+    - cron: '17 14 * * 1-5'   # 21:17 WIB backup, in case GitHub drops the first run
   workflow_dispatch:           # manual trigger — keep for live demo
 permissions:
-  contents: write              # needed to commit docs/data/latest.json
+  contents: read               # never writes to the repo (submission freeze)
+  pages: write
+  id-token: write
 ```
 
-> GitHub's free-tier cron can drift 10–30 minutes. Irrelevant for a daily job.
-> `workflow_dispatch` lets you trigger a live run during the presentation — a far better
-> demo than a screenshot.
+> GitHub's free-tier cron can drift 10–30 minutes, and drops top-of-the-hour schedules
+> most often — hence minute 17 and a backup run. Running twice is safe: the digest is
+> sent once per day. `workflow_dispatch` lets you trigger a live run during the
+> presentation — a far better demo than a screenshot.
 
 **The reliability layer is our differentiator, not the algorithm.** "Repeatable routine
 running autonomously" is a reliability claim, so build what makes it true:
@@ -222,13 +242,16 @@ running autonomously" is a reliability claim, so build what makes it true:
 | Requirement | Implementation |
 |---|---|
 | Non-trading days exit clean | Log `no_trading_day`, return success. No crash, no alert. |
+| Only closed sessions | Without `--date`, a run before 17:00 WIB (or one GitHub delays past midnight) uses the previous trading day, never an unfinished session |
 | Idempotency | `(symbol, trade_date)` PK for DB; `sent_digests` for the bot |
 | Retry with backoff | Wrap Sectors calls; the API will time out occasionally |
-| Dead man's switch | If no successful run by cutoff, send a **failure** message |
+| API rate limit (429) | Wait ≥20s/40s (or the server's `Retry-After`), so all 40 stocks get prices |
+| Duplicate articles from the API | Dropped by id before saving, so one bad batch can't crash the run |
+| Failure alert | Any crash logs `failed` to `run_log` and sends "⚠️ Pipeline failed" to Telegram. (A true dead man's switch for runs GitHub never starts is future work.) |
 | Structured logs | Write `run_log` each run — doubles as evaluation data |
 
-**The dead man's switch is the subtle one.** A silent failure looks identical to "no
-alerts today." Being able to explain that distinction in the presentation signals real
+**Failure alerts are the subtle one.** A silent failure looks identical to "no alerts
+today." Being able to explain that distinction in the presentation signals real
 thinking about autonomous systems.
 
 ---
@@ -248,6 +271,11 @@ gives a **label**, and therefore a tunable objective.
 | Compression ratio | `1 - (sent / raw)` | The headline number |
 | **Miss rate** | Of items *suppressed*, % preceding a material move | **The one that matters** |
 | Open rate | Of items sent, % the user opened | Usefulness signal |
+
+**Status:** compression ratio is computed on every run and shown on the dashboard.
+Miss rate is the next step: every news item and daily price is stored raw *before*
+filtering, so it can be computed retroactively without re-fetching from the API.
+Open rate needs Telegram analytics and is not measured yet.
 
 **Costs are asymmetric.** A filter sending 5 useful items a day is worthless if it
 silently drops the announcement that moved a position 12%. Optimise miss rate, not
@@ -290,7 +318,7 @@ them on a call on day 1, because every other track is blocked until they exist.
 
 ### Team split (4 members)
 
-| Track | Owner | Deliverable |
+| Area | Owner | Deliverable |
 |---|---|---|
 | Ingestion + DB | Cleon & Bernardi | `ingest.py`, `backfill.py`, `db.py`, schema |
 | Filters + CI | Cleon | `baselines.py`, `filters.py`, `daily.yml` |
@@ -348,8 +376,12 @@ Twenty minutes agreeing this shape buys parallel progress for the whole project.
 - Auth is a **bare** `Authorization: <key>` header — *not* `Bearer <key>`
 - Requires a paid Insider plan — **confirm access within 24 hours**, it is the only
   blocker that cannot be engineered around
-- Use **Daily Full-Universe Close** for the nightly job: every ticker in one paginated
-  feed instead of ~900 per-symbol calls
+- Nightly prices use `/daily/{symbol}/` per watchlist stock, **not** the full-universe
+  close feed: confirmed live, `/close/` rows carry no volume, so the volume filter
+  couldn't run. 40 calls per night, each re-fetching a short lookback so a missed run
+  heals itself
+- The API rate-limits bursts (HTTP 429); the client waits for the limit to reset
+  rather than giving up after a few seconds
 - Window limits: 90 days on most range endpoints, **14 days** on broker activity
 - Fallback if the key falls through: `yfinance` with `.JK` suffixes — loses news and
   broker data, keeps the statistical side
@@ -393,15 +425,17 @@ calls, minutes to run. The full universe would consume the entire first week.
 | Frontend becomes a blocker | Stated rule: day-5 deploy does not wait for dashboard |
 | CI env differs from local | First deploy takes longer than feels reasonable. Budget it |
 | Timezone bugs (UTC cron vs WIB) | Store UTC everywhere, convert only at display |
+| Scheduled run delayed or dropped | Off-the-hour cron plus a 21:17 WIB backup run |
 | Scope creep | Section 1 lists what we are not building. Re-read it weekly |
-| Silent job failure | Dead man's switch |
+| Silent job failure | Failure alert to Telegram; dead man's switch is future work |
 
 ---
 
 ## 12. Presentation notes
 
-- Trigger a live run with `workflow_dispatch` during the demo
+- Trigger a live run with `workflow_dispatch` during the demo (use an older date so the
+  evening's scheduled digest isn't consumed)
 - Screenshot the Actions run history — the column of green checks **is** the deliverable
-- Lead with the compression ratio and miss rate, not the architecture diagram
+- Lead with the compression ratio (measured on every run), not the architecture diagram
 - If asked "does this solve information overload?" — no, it reduces it, and here is the
   measured reduction
