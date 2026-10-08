@@ -1,32 +1,20 @@
-# The graded deliverable. This file IS the "autonomous repeatable routine".
-#
 # The Actions run-history page — a column of green checkmarks, one per trading
-# day — is your primary evidence. Screenshot it for the submission.
 name: daily-pipeline
 
 on:
   schedule:
     # 12:17 UTC = 19:17 WIB, weekdays. IDX closes 16:00 WIB, so data has settled.
-    # Minute 17, not 0: GitHub delays or drops top-of-the-hour schedules most
-    # often, because that's when everyone else's jobs run.
     - cron: "17 12 * * 1-5"
     # Backup at 21:17 WIB in case GitHub drops the first one. Safe to run twice:
     # the digest is sent once per day and run_log keeps one row per trigger.
     - cron: "17 14 * * 1-5"
   workflow_dispatch:
-    # KEEP THIS. Lets you trigger a live run during the presentation, which is a
-    # far better demo than a screenshot.
+   
     inputs:
       date:
         description: "Override date (YYYY-MM-DD), blank = last trading day"
         required: false
 
-# NOTE: this workflow deliberately does NOT commit anything back to the repo.
-# The hackathon rules freeze the repo at submission (or 30 Sep 23:59 WIB,
-# whichever is first) — "no commits, pushes, edits, or changes of any kind
-# ... including bug fixes" after that. A scheduled job that commits would
-# violate the freeze on every run after submission. Dashboard data is instead
-# published via a Pages *artifact* deploy, which is not a repo write.
 permissions:
   contents: read
   pages: write
@@ -34,7 +22,7 @@ permissions:
 
 concurrency:
   group: daily-pipeline
-  cancel-in-progress: false   # never kill a half-finished run
+  cancel-in-progress: false   
 
 jobs:
   run:
@@ -72,9 +60,7 @@ jobs:
           fi
 
       - name: Upload dashboard artifact
-        # Publishes docs/ as a Pages artifact — no repo write, so nothing
-        # here can violate the post-submission freeze. The name includes the
-        # attempt number so a re-run never finds two artifacts with one name.
+
         uses: actions/upload-pages-artifact@v3
         with:
           path: docs
