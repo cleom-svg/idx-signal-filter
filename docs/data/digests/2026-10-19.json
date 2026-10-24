@@ -1,0 +1,46 @@
+{
+  "run_date": "2026-10-19",
+  "trigger": "schedule",
+  "status": "success",
+  "started_at": "2026-10-19T12:02:10+00:00",
+  "finished_at": "2026-10-19T12:04:31+00:00",
+  "generated_at": "2026-10-19T12:04:31+00:00",
+  "count_raw": 68,
+  "count_deduped": 28,
+  "count_surprising": 4,
+  "count_watchlist": 4,
+  "count_sent": 3,
+  "stages": {
+    "raw": 68,
+    "deduped": 28,
+    "surprising": 4,
+    "watchlist": 4,
+    "sent": 3
+  },
+  "items": [
+    {
+      "symbol": "BBCA",
+      "headline": "BBCA announces new partnership in digital infrastructure",
+      "url": "https://example.com/bbca-demo",
+      "volume_z": null,
+      "return_z": 1.0,
+      "reason": "price +1.0s"
+    },
+    {
+      "symbol": "ICBP",
+      "headline": "Analysts flag ICBP after unusual trading activity",
+      "url": "https://example.com/icbp-demo",
+      "volume_z": 6.1,
+      "return_z": -1.5,
+      "reason": "volume +6.1s, price -1.5s"
+    },
+    {
+      "symbol": "PGAS",
+      "headline": "PGAS halted briefly pending corporate announcement",
+      "url": "https://example.com/pgas-demo",
+      "volume_z": 6.4,
+      "return_z": -1.1,
+      "reason": "volume +6.4s, price -1.1s"
+    }
+  ]
+}

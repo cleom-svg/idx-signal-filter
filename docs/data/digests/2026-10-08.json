@@ -1,0 +1,38 @@
+{
+  "run_date": "2026-10-08",
+  "trigger": "schedule",
+  "status": "success",
+  "started_at": "2026-10-08T12:02:10+00:00",
+  "finished_at": "2026-10-08T12:04:31+00:00",
+  "generated_at": "2026-10-08T12:04:31+00:00",
+  "count_raw": 101,
+  "count_deduped": 44,
+  "count_surprising": 5,
+  "count_watchlist": 2,
+  "count_sent": 2,
+  "stages": {
+    "raw": 101,
+    "deduped": 44,
+    "surprising": 5,
+    "watchlist": 2,
+    "sent": 2
+  },
+  "items": [
+    {
+      "symbol": "PGAS",
+      "headline": "PGAS reports stronger quarterly volume on sector rotation",
+      "url": "https://example.com/pgas-demo",
+      "volume_z": 3.9,
+      "return_z": null,
+      "reason": "volume +3.9s"
+    },
+    {
+      "symbol": "BRPT",
+      "headline": "BRPT reports stronger quarterly volume on sector rotation",
+      "url": "https://example.com/brpt-demo",
+      "volume_z": 6.6,
+      "return_z": null,
+      "reason": "volume +6.6s"
+    }
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "run_date": "2026-10-16",
+  "trigger": "schedule",
+  "status": "success",
+  "started_at": "2026-10-16T12:02:10+00:00",
+  "finished_at": "2026-10-16T12:04:31+00:00",
+  "generated_at": "2026-10-16T12:04:31+00:00",
+  "count_raw": 122,
+  "count_deduped": 44,
+  "count_surprising": 7,
+  "count_watchlist": 2,
+  "count_sent": 2,
+  "stages": {
+    "raw": 122,
+    "deduped": 44,
+    "surprising": 7,
+    "watchlist": 2,
+    "sent": 2
+  },
+  "items": [
+    {
+      "symbol": "GOTO",
+      "headline": "GOTO announces new partnership in digital infrastructure",
+      "url": "https://example.com/goto-demo",
+      "volume_z": null,
+      "return_z": 0.7,
+      "reason": "price +0.7s"
+    },
+    {
+      "symbol": "ICBP",
+      "headline": "ICBP secures expansion financing from regional banks",
+      "url": "https://example.com/icbp-demo",
+      "volume_z": null,
+      "return_z": 2.1,
+      "reason": "price +2.1s"
+    }
+  ]
+}

@@ -1,0 +1,70 @@
+{
+  "run_date": "2026-10-21",
+  "trigger": "schedule",
+  "status": "success",
+  "started_at": "2026-10-21T12:02:10+00:00",
+  "finished_at": "2026-10-21T12:04:31+00:00",
+  "generated_at": "2026-10-21T12:04:31+00:00",
+  "count_raw": 111,
+  "count_deduped": 42,
+  "count_surprising": 7,
+  "count_watchlist": 7,
+  "count_sent": 6,
+  "stages": {
+    "raw": 111,
+    "deduped": 42,
+    "surprising": 7,
+    "watchlist": 7,
+    "sent": 6
+  },
+  "items": [
+    {
+      "symbol": "PGAS",
+      "headline": "Analysts flag PGAS after unusual trading activity",
+      "url": "https://example.com/pgas-demo",
+      "volume_z": 6.4,
+      "return_z": 3.2,
+      "reason": "volume +6.4s, price +3.2s"
+    },
+    {
+      "symbol": "BRPT",
+      "headline": "BRPT insider filing: director adjusts stake",
+      "url": "https://example.com/brpt-demo",
+      "volume_z": 2.5,
+      "return_z": null,
+      "reason": "volume +2.5s"
+    },
+    {
+      "symbol": "ASII",
+      "headline": "ASII insider filing: director adjusts stake",
+      "url": "https://example.com/asii-demo",
+      "volume_z": 3.2,
+      "return_z": null,
+      "reason": "volume +3.2s"
+    },
+    {
+      "symbol": "ICBP",
+      "headline": "ICBP insider filing: director adjusts stake",
+      "url": "https://example.com/icbp-demo",
+      "volume_z": 2.2,
+      "return_z": null,
+      "reason": "volume +2.2s"
+    },
+    {
+      "symbol": "ADRO",
+      "headline": "ADRO secures expansion financing from regional banks",
+      "url": "https://example.com/adro-demo",
+      "volume_z": null,
+      "return_z": -2.2,
+      "reason": "price -2.2s"
+    },
+    {
+      "symbol": "GOTO",
+      "headline": "GOTO announces new partnership in digital infrastructure",
+      "url": "https://example.com/goto-demo",
+      "volume_z": null,
+      "return_z": -3.5,
+      "reason": "price -3.5s"
+    }
+  ]
+}

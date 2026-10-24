@@ -1,0 +1,21 @@
+{
+  "run_date": "2026-10-13",
+  "trigger": "schedule",
+  "status": "success",
+  "started_at": "2026-10-13T12:02:10+00:00",
+  "finished_at": "2026-10-13T12:04:31+00:00",
+  "generated_at": "2026-10-13T12:04:31+00:00",
+  "count_raw": 83,
+  "count_deduped": 26,
+  "count_surprising": 3,
+  "count_watchlist": 3,
+  "count_sent": 0,
+  "stages": {
+    "raw": 83,
+    "deduped": 26,
+    "surprising": 3,
+    "watchlist": 3,
+    "sent": 0
+  },
+  "items": []
+}

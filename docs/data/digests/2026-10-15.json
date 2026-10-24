@@ -1,0 +1,46 @@
+{
+  "run_date": "2026-10-15",
+  "trigger": "schedule",
+  "status": "success",
+  "started_at": "2026-10-15T12:02:10+00:00",
+  "finished_at": "2026-10-15T12:04:31+00:00",
+  "generated_at": "2026-10-15T12:04:31+00:00",
+  "count_raw": 83,
+  "count_deduped": 33,
+  "count_surprising": 3,
+  "count_watchlist": 3,
+  "count_sent": 3,
+  "stages": {
+    "raw": 83,
+    "deduped": 33,
+    "surprising": 3,
+    "watchlist": 3,
+    "sent": 3
+  },
+  "items": [
+    {
+      "symbol": "BRPT",
+      "headline": "Analysts flag BRPT after unusual trading activity",
+      "url": "https://example.com/brpt-demo",
+      "volume_z": 4.3,
+      "return_z": 0.8,
+      "reason": "volume +4.3s, price +0.8s"
+    },
+    {
+      "symbol": "MDKA",
+      "headline": "MDKA reports stronger quarterly volume on sector rotation",
+      "url": "https://example.com/mdka-demo",
+      "volume_z": 2.7,
+      "return_z": null,
+      "reason": "volume +2.7s"
+    },
+    {
+      "symbol": "GOTO",
+      "headline": "GOTO halted briefly pending corporate announcement",
+      "url": "https://example.com/goto-demo",
+      "volume_z": 2.9,
+      "return_z": -1.1,
+      "reason": "volume +2.9s, price -1.1s"
+    }
+  ]
+}

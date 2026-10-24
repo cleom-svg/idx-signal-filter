@@ -1,0 +1,38 @@
+{
+  "run_date": "2026-10-09",
+  "trigger": "schedule",
+  "status": "success",
+  "started_at": "2026-10-09T12:02:10+00:00",
+  "finished_at": "2026-10-09T12:04:31+00:00",
+  "generated_at": "2026-10-09T12:04:31+00:00",
+  "count_raw": 87,
+  "count_deduped": 26,
+  "count_surprising": 3,
+  "count_watchlist": 2,
+  "count_sent": 2,
+  "stages": {
+    "raw": 87,
+    "deduped": 26,
+    "surprising": 3,
+    "watchlist": 2,
+    "sent": 2
+  },
+  "items": [
+    {
+      "symbol": "BBRI",
+      "headline": "BBRI halted briefly pending corporate announcement",
+      "url": "https://example.com/bbri-demo",
+      "volume_z": 2.4,
+      "return_z": 0.5,
+      "reason": "volume +2.4s, price +0.5s"
+    },
+    {
+      "symbol": "BRPT",
+      "headline": "BRPT insider filing: director adjusts stake",
+      "url": "https://example.com/brpt-demo",
+      "volume_z": 5.2,
+      "return_z": null,
+      "reason": "volume +5.2s"
+    }
+  ]
+}

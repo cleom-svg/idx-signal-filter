@@ -1,0 +1,46 @@
+{
+  "run_date": "2026-10-20",
+  "trigger": "schedule",
+  "status": "success",
+  "started_at": "2026-10-20T12:02:10+00:00",
+  "finished_at": "2026-10-20T12:04:31+00:00",
+  "generated_at": "2026-10-20T12:04:31+00:00",
+  "count_raw": 119,
+  "count_deduped": 42,
+  "count_surprising": 5,
+  "count_watchlist": 5,
+  "count_sent": 3,
+  "stages": {
+    "raw": 119,
+    "deduped": 42,
+    "surprising": 5,
+    "watchlist": 5,
+    "sent": 3
+  },
+  "items": [
+    {
+      "symbol": "TLKM",
+      "headline": "TLKM insider filing: director adjusts stake",
+      "url": "https://example.com/tlkm-demo",
+      "volume_z": 5.7,
+      "return_z": null,
+      "reason": "volume +5.7s"
+    },
+    {
+      "symbol": "INDF",
+      "headline": "INDF halted briefly pending corporate announcement",
+      "url": "https://example.com/indf-demo",
+      "volume_z": 4.0,
+      "return_z": 2.6,
+      "reason": "volume +4.0s, price +2.6s"
+    },
+    {
+      "symbol": "ASII",
+      "headline": "ASII reports stronger quarterly volume on sector rotation",
+      "url": "https://example.com/asii-demo",
+      "volume_z": 2.9,
+      "return_z": null,
+      "reason": "volume +2.9s"
+    }
+  ]
+}

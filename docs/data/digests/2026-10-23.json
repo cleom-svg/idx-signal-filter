@@ -1,0 +1,38 @@
+{
+  "run_date": "2026-10-23",
+  "trigger": "schedule",
+  "status": "success",
+  "started_at": "2026-10-23T12:02:10+00:00",
+  "finished_at": "2026-10-23T12:04:31+00:00",
+  "generated_at": "2026-10-23T12:04:31+00:00",
+  "count_raw": 86,
+  "count_deduped": 31,
+  "count_surprising": 2,
+  "count_watchlist": 2,
+  "count_sent": 2,
+  "stages": {
+    "raw": 86,
+    "deduped": 31,
+    "surprising": 2,
+    "watchlist": 2,
+    "sent": 2
+  },
+  "items": [
+    {
+      "symbol": "BBRI",
+      "headline": "BBRI secures expansion financing from regional banks",
+      "url": "https://example.com/bbri-demo",
+      "volume_z": null,
+      "return_z": -2.4,
+      "reason": "price -2.4s"
+    },
+    {
+      "symbol": "BBCA",
+      "headline": "BBCA reports stronger quarterly volume on sector rotation",
+      "url": "https://example.com/bbca-demo",
+      "volume_z": 6.7,
+      "return_z": null,
+      "reason": "volume +6.7s"
+    }
+  ]
+}

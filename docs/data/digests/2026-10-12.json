@@ -1,0 +1,46 @@
+{
+  "run_date": "2026-10-12",
+  "trigger": "schedule",
+  "status": "success",
+  "started_at": "2026-10-12T12:02:10+00:00",
+  "finished_at": "2026-10-12T12:04:31+00:00",
+  "generated_at": "2026-10-12T12:04:31+00:00",
+  "count_raw": 134,
+  "count_deduped": 59,
+  "count_surprising": 8,
+  "count_watchlist": 5,
+  "count_sent": 3,
+  "stages": {
+    "raw": 134,
+    "deduped": 59,
+    "surprising": 8,
+    "watchlist": 5,
+    "sent": 3
+  },
+  "items": [
+    {
+      "symbol": "TLKM",
+      "headline": "TLKM insider filing: director adjusts stake",
+      "url": "https://example.com/tlkm-demo",
+      "volume_z": 3.5,
+      "return_z": null,
+      "reason": "volume +3.5s"
+    },
+    {
+      "symbol": "BBCA",
+      "headline": "BBCA insider filing: director adjusts stake",
+      "url": "https://example.com/bbca-demo",
+      "volume_z": 4.7,
+      "return_z": null,
+      "reason": "volume +4.7s"
+    },
+    {
+      "symbol": "BRPT",
+      "headline": "BRPT secures expansion financing from regional banks",
+      "url": "https://example.com/brpt-demo",
+      "volume_z": null,
+      "return_z": -1.3,
+      "reason": "price -1.3s"
+    }
+  ]
+}

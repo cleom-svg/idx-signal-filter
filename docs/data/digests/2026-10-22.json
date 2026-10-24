@@ -1,0 +1,54 @@
+{
+  "run_date": "2026-10-22",
+  "trigger": "schedule",
+  "status": "success",
+  "started_at": "2026-10-22T12:02:10+00:00",
+  "finished_at": "2026-10-22T12:04:31+00:00",
+  "generated_at": "2026-10-22T12:04:31+00:00",
+  "count_raw": 113,
+  "count_deduped": 42,
+  "count_surprising": 5,
+  "count_watchlist": 4,
+  "count_sent": 4,
+  "stages": {
+    "raw": 113,
+    "deduped": 42,
+    "surprising": 5,
+    "watchlist": 4,
+    "sent": 4
+  },
+  "items": [
+    {
+      "symbol": "ICBP",
+      "headline": "Analysts flag ICBP after unusual trading activity",
+      "url": "https://example.com/icbp-demo",
+      "volume_z": 5.4,
+      "return_z": -3.1,
+      "reason": "volume +5.4s, price -3.1s"
+    },
+    {
+      "symbol": "PGAS",
+      "headline": "Analysts flag PGAS after unusual trading activity",
+      "url": "https://example.com/pgas-demo",
+      "volume_z": 6.0,
+      "return_z": -0.8,
+      "reason": "volume +6.0s, price -0.8s"
+    },
+    {
+      "symbol": "BRPT",
+      "headline": "BRPT halted briefly pending corporate announcement",
+      "url": "https://example.com/brpt-demo",
+      "volume_z": 4.0,
+      "return_z": -0.1,
+      "reason": "volume +4.0s, price -0.1s"
+    },
+    {
+      "symbol": "ANTM",
+      "headline": "ANTM halted briefly pending corporate announcement",
+      "url": "https://example.com/antm-demo",
+      "volume_z": 2.4,
+      "return_z": -3.0,
+      "reason": "volume +2.4s, price -3.0s"
+    }
+  ]
+}
