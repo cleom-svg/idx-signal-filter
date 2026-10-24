@@ -1,0 +1,65 @@
+{
+  "_comment": "Run history for the observability dashboard. Mirrors the run_log table.",
+  "runs": [
+    {
+      "run_date": "2026-09-14",
+      "trigger": "schedule",
+      "status": "success",
+      "started_at": "2026-09-14T12:02:10+00:00",
+      "finished_at": "2026-09-14T12:04:31+00:00",
+      "count_raw": 8420,
+      "count_deduped": 2910,
+      "count_surprising": 387,
+      "count_watchlist": 54,
+      "count_sent": 6
+    },
+    {
+      "run_date": "2026-09-11",
+      "trigger": "schedule",
+      "status": "success",
+      "started_at": "2026-09-11T12:02:10+00:00",
+      "finished_at": "2026-09-11T12:04:31+00:00",
+      "count_raw": 7980,
+      "count_deduped": 2740,
+      "count_surprising": 341,
+      "count_watchlist": 48,
+      "count_sent": 5
+    },
+    {
+      "run_date": "2026-09-10",
+      "trigger": "schedule",
+      "status": "success",
+      "started_at": "2026-09-10T12:02:10+00:00",
+      "finished_at": "2026-09-10T12:04:31+00:00",
+      "count_raw": 8110,
+      "count_deduped": 2803,
+      "count_surprising": 402,
+      "count_watchlist": 56,
+      "count_sent": 8
+    },
+    {
+      "run_date": "2026-09-09",
+      "trigger": "schedule",
+      "status": "no_trading_day",
+      "started_at": "2026-09-09T12:02:10+00:00",
+      "finished_at": "2026-09-09T12:04:31+00:00",
+      "count_raw": 0,
+      "count_deduped": 0,
+      "count_surprising": 0,
+      "count_watchlist": 0,
+      "count_sent": 0
+    },
+    {
+      "run_date": "2026-09-08",
+      "trigger": "schedule",
+      "status": "success",
+      "started_at": "2026-09-08T12:02:10+00:00",
+      "finished_at": "2026-09-08T12:04:31+00:00",
+      "count_raw": 7640,
+      "count_deduped": 2611,
+      "count_surprising": 298,
+      "count_watchlist": 42,
+      "count_sent": 4
+    }
+  ]
+}
